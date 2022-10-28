@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:07:38 by marius            #+#    #+#             */
-/*   Updated: 2022/10/27 11:15:31 by marius           ###   ########.fr       */
+/*   Updated: 2022/10/28 10:49:34 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,12 @@
 
 typedef struct s_room
 {
-	char name;
-	int connections;
-	char *con_names;
-	struct s_room *next;
-	struct s_room *prev;
+	char			name;
+	int				status; // 1 for start, 2 for end, 0 for normal
+	int				connections;
+	char			*con_names;
+	struct s_room	*next;
+	struct s_room	*prev;
 }				t_room;
 
 
