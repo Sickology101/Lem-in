@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:53:18 by marius            #+#    #+#             */
-/*   Updated: 2022/11/14 15:08:52 by marius           ###   ########.fr       */
+/*   Updated: 2022/11/24 12:46:13 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,6 +171,45 @@ int check_comment(t_farm *farm, char *line)
 	return (0);
 }
 
+int	check_coord(char *line)
+{
+	char	*temp;
+	int		index;
+	
+	index = 0;
+	temp = ft_strchr(line, ' ') + 1;
+	while (temp[index] != ' ' && temp[index] != '\0')
+		if (ft_isdigit(temp[index++]) != 1)
+			return (-1);
+	if (temp[index++] != ' ')
+		return (-1);
+	while (temp[index] != '\0' && index <= 20)
+		if (ft_isdigit(temp[index++]) != 1)
+			return (-1);
+	return (0);
+}
+
+char	*check_syntax(char *line)
+{
+	int		index;
+	char	*temp;
+
+	index = 0;
+	temp = line;
+	if (line[0] != '#')
+	{
+		while (index <= 3 && temp != NULL)
+			if (((temp = ft_strchr(temp, ' ')) != NULL) && temp++)
+				index++;
+		if (index != 2 || line[0] == 'L' || check_coord(line) != 0)
+		{
+			ft_memdel((void *)&line);
+			return (NULL);
+		}
+	}
+	return (line);
+}
+
 int	get_room(t_farm *farm, t_room *room)
 {
 	char	*line;
@@ -187,7 +226,209 @@ int	get_room(t_farm *farm, t_room *room)
 			if (check_comment(farm, line) == -1)
 				return (error_free(line));
 		}
+		else if (line && ft_strchr(line, '-') == NULL)
+				if ((!(line) || (line = check_syntax(line)) == NULL) || (room = new_room(farm, room, line, id++)) == NULL)
+					return (error_free(line));
+		ft_memdel((void *)&line);
+		ret = parse_line(0, &line, farm, 2);
+		if (line && check_line(line, 1) != -1 && ((farm->line = line)))
+			return (0);
 	}
+	ft_memdel((void *)&line);
+	return ((ret > 0) ? 0 : -1);
+}
+
+int	room_exist(char *room, t_farm *farm)
+{
+	t_room *temp;
+	
+	temp = farm->first_room;
+	while (temp && temp->next != NULL)
+	{
+		if (room[0] == temp->name[0])
+			if (ft_strcmp(room, temp->name) == 0)
+				return (-1);
+		temp = temp->next;	
+	}
+	return (0);
+}
+
+int	init_room(t_farm *farm, t_room *room, char *line, int id)
+{
+	int	name_size;
+	
+	name_size = 0;
+	while (line[name_size] != ' ')
+		name_size++;
+	if (!(room->name = ft_strndup(line,name_size)))
+		return (-1);
+	if (room_exist(room->name, farm) == -1)
+		return (-1);
+	room->id = id;
+	room->empty = -1;
+	if (farm->flags & 1 && farm->start == NULL)
+	{
+		farm->start = room;
+		farm->flags &= ~2;
+		farm->flags &= ~1;
+	}
+	else if (farm->flags & 2 && farm->end == NULL)
+	{
+		farm->end = room;
+		farm->flags &= ~1;
+		farm->flags &= ~2;
+	}
+	return (0);
+}
+
+t_room	*new_room(t_farm *farm, t_room *room, char *line, long id)
+{
+	t_room	*new;
+	t_room	*temp;
+
+	temp = room;
+	if (id > 2147483647)
+		return (NULL);
+	if (room->name != NULL)
+	{
+		if(!(new = ft_memalloc(sizeof(t_room))))
+			return (NULL);
+		room->next = new;
+		room = new;
+		room->prev = temp;
+	}
+	if (init_room(farm, room, line, id) == -1)
+		return (NULL);
+	return (room);
+}
+
+int	create_table(t_farm *farm, t_room *room)
+{
+	if (farm->start == NULL || farm->end == NULL)
+	{
+		ft_memdel((void *)&farm->line);
+		return (-1);
+	}
+	while (room->next)
+		room = room->next;
+	farm->room_nb = room->id + 1;
+	if (!(farm->id_table = ft_memalloc(sizeof(t_room *) * (farm->room_nb + 1))))
+		return (-1);
+	while (room->prev)
+	{
+		farm->id_table[room->id] = room;
+		room = room->prev;
+	}
+	farm->id_table[room->id] = room;
+	return (0);
+}
+
+int	init_links(t_farm *farm, char **room)
+{
+	int	index;
+	
+	index = 0;
+	room[0] = NULL;
+	room[1] = NULL;
+	if (!(farm->links = ft_memalloc(sizeof(int *) * (farm->room_nb + 1))))
+		return (-1);
+	while (index < farm->room_nb + 1)
+		if (!(farm->links[index++] = ft_memalloc(sizeof(int) * (farm->room_nb + 1))))
+			return (-1);
+	return (0);
+}
+
+char *get_rooms_name(char *line, int mode)
+{
+	char *room;
+	int		room_length;
+	
+	room_length = 0;
+	if (mode == 1)
+		while (line[room_length] != '-' && line[room_length] != '\0')
+			room_length++;
+	else if (mode == 2)
+	{
+		line = ft_strchr(line, '-') + 1;
+		while (line[room_length] != '\0')
+			room_length++;
+	}
+	room = ft_strndup(line, room_length);
+	return (room);
+}
+
+int	room_exist2(t_farm *farm, char *room, t_room **ids, int mode)
+{
+	int	index;
+	
+	index = 0;
+	while (index < farm->room_nb)
+	{
+		if (ft_strcmp(room, farm->id_table[index++]->name) == 0)
+		{
+			ids[mode] = farm->id_table[i - 1];
+			return (1);
+		}
+	}
+	return (0);
+}
+
+void	save_links(t_farm *farm, t_room **ids)
+{
+	farm->links[ids[0]->id][ids[1]->id] = 1;
+	ids[0]->links_nb++;
+	farm->links[ids[1]->id][ids[0]->id] = 1;
+	ids[1]->links_nb++;
+}
+
+int	get_links(t_farm *farm)
+{
+	int	ret;
+	char *line;
+	char *room[2];
+	t_room	*ids[2];
+
+	if (init_links(farm, room) == -1)
+		return (-1);
+	if (farm->line && (ret = 1))
+		line = farm->line;
+	else
+		ret = parse_line(0, &line, farm, 1);
+	while (ret > 0)
+	{
+		if ((!(line)) || ((room[0] = get_rooms_name(line, 1)) == NULL) || (room_exist2(farm, room[0], ids, 0) != 1) || ((room[1] = get_rooms_name(line, 2)) == NULL) || (room_exist2(farm, room[1], ids, 1) != 1))
+			return (free_links(line, room, -1));
+		save_links(farm, ids);
+		free_links(line, room, 0);
+		ret = parse_line(0, &line, farm, 1);
+	}
+	return ((ret >= 0) ? 0 : -1);
+}
+
+int	create_link_list(t_farm *farm)
+{
+	int	index1;
+	int	index2;
+	int	index3;
+
+	index1 = 0;
+	index2 = 0;
+	index3 = 0;
+	while (index1 < farm->room_nb)
+	{
+		if (!(farm->id_table[index1]->links = ft_memalloc(sizeof(int) * (farm->id_table[index1]->links_nb + 1))))
+			return (-1);
+		while (index2 < farm->room_nb)
+		{
+			if (farm->links[index1][index2] == 1)
+				farm->id_table[index1]->links[index3++] = index2;
+			index2++;
+		}
+		index3 = 0;
+		index2 = 0;
+		index1++;
+	}
+	return (0);
 }
 
 int	read_map(t_farm *farm, t_room *room)
@@ -199,7 +440,7 @@ int	read_map(t_farm *farm, t_room *room)
 	farm->input = start;
 	farm->input_start = start;
 	room->next = NULL;
-	if(get_ants(farm) != 0 || get_room(farm, room) != 0 ) // here
+	if(get_ants(farm) != 0 || get_room(farm, room) != 0 || create_table(farm, room) != 0 || get_links(farm) != 0 || create_link_list(farm) != 0)// here
 	{
 		ft_printf("Error\n");
 		return (-1);

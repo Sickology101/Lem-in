@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:19:50 by marius            #+#    #+#             */
-/*   Updated: 2022/11/14 11:31:55 by marius           ###   ########.fr       */
+/*   Updated: 2022/11/24 12:56:17 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,35 @@ int	free_lemin(t_farm *farm, t_room *room)
 	return (-1);
 }
 
+int	error_free(char *line)
+{
+	ft_memdel((void *)&line);
+	return (-1);
+}
+
+int	free_links(char *line, char **rooms, int ret)
+{
+	ft_memdel((void *)&rooms[0]);
+	ft_memdel((void *)&rooms[1]);
+	ft_memdel((void *)&line);
+	return (ret);
+}
+
+void	write_input(t_farm *farm)
+{
+	farm->input = farm->input_start;
+	while (farm->input->line)
+	{
+		ft_putstr(farm->input->line);
+		ft_putstr("\n");
+		farm->input = farm->input->next;
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	t_farm	*farm;
 	t_room	*room;
-	//int		flag;
 
 	if (argc > 1)
 	{
@@ -69,6 +93,10 @@ int	main(int argc, char **argv)
 	farm->first_room = room;
 	if (read_map(farm, room) == -1)
 		return (free_lemin(farm, room));
+	write_input(farm);
+	ft_putchar('\n');
+	generate(farm);
+	free_lemin(farm, room);
 	return (0);
 }
 

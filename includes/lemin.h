@@ -6,13 +6,35 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:07:38 by marius            #+#    #+#             */
-/*   Updated: 2022/11/14 15:05:56 by marius           ###   ########.fr       */
+/*   Updated: 2022/11/24 14:37:30 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEMIN_H
 # define LEMIN_H
 # include "ft_printf.h"
+
+typedef struct s_path
+{
+	int	*path;
+	int	len;
+	int	max;
+	int	*division;
+	int	longest;
+	struct s_path *next;
+}				t_path;
+
+
+typedef struct s_queue
+{
+	int	*queue;
+	int	*visited;
+	int *prev;
+	int	length;
+	int	position;
+	int	**flow;
+}				t_queue;
+
 
 typedef struct s_input
 {
@@ -24,6 +46,10 @@ typedef struct s_room
 {
 	char *name;
 	int		*links;
+	int				links_nb;
+	int				id;
+	int				empty;
+	int				weight;
 	struct s_room	*next;
 	struct s_room	*prev;
 }				t_room;
@@ -32,9 +58,10 @@ typedef struct s_farm
 {
 	int	room_nb;
 	int	**links;
-	int	**id_table;
+	t_room	**id_table;
 	int	ants;
 	int	flags;
+	char	*line;
 	t_room	*start;
 	t_room	*end;
 	t_input *input;
