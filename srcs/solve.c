@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 12:54:48 by marius            #+#    #+#             */
-/*   Updated: 2022/11/24 15:59:09 by marius           ###   ########.fr       */
+/*   Updated: 2022/11/29 11:18:45 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,6 +260,128 @@ int	optimise(t_farm *farm, t_queue *queue, int t)
 	return (0);
 }
 
+void	save_flow(t_queue *queue, t_farm *farm)
+{
+	int	index1;
+	int	index2;
+	
+	index1 = farm->end->id;
+	if (queue->prev[index1] == farm->start->id)
+		return ;
+	while (index1 != farm->start->id)
+	{
+		index2 = queue->prev[index1];
+		if (queue->flow[index1][index2] == 0)
+		{
+			queue->flow[index1][index2] = -1;
+			queue->flow[index2][index1] = 1;
+		}
+		else if (queue->flow[index1][index2] == -1 || queue->flow[index1][index2] == 1)
+		{
+			queue->flow[index1][index2] = 0;
+			queue->flow[index2][index1] = 0;
+		}
+		index1 = index2;
+	}
+}
+
+int	find_neighbours(t_queue *queue, t_room *room)
+{
+	int	index;
+	
+	index = 0;
+	while (index < room->links_nb)
+	{
+		if (queue->visited[room->links[index]] == 0 && queue->flow[room->id][room->links[index]] == 1)
+		{
+			queue->queue[queue->position] = room->links[index];
+			queue->prev[room->links[index]] = room->id;
+			queue->visited[room->links[index]] = 1;
+			++queue->position;
+		}
+		++index;
+	}
+	return (0);
+}
+
+int	breadth_first_search(t_farm *farm, t_queue *queue)
+{
+	int	index;
+	int	node;
+	
+	index = -1;
+	set_to_n(&queue->queue, queue->length, -1);
+	reset_queue(queue, farm->start->id, farm->end->id);
+	while (++index < queue->length && queue->visited[farm->end->id] != 1 && queue->queue[index] >= 0)
+	{
+		node = queue->queue[index];
+		find_neighbours(queue, farm->id_table[node]);
+	}
+	if (queue->visited[farm->end->id] != 1)
+		return (-1);
+	if (queue->flow[farm->start->id][farm->end->id] == 1 && queue->prev[farm->end->id] == farm->start->id)
+		queue->flow[farm->start->id][farm->end->id] = 0;
+	return (0);
+}
+
+size_t	count_steps(t_queue *queue, int start, int end)
+{
+	int	steps;
+
+	steps = 0;
+	while (end != start)
+	{
+		end = queue->prev[end];
+		++steps;
+	}
+	return (steps);
+}
+
+int	*rev_path(t_farm *farm, t_queue *queue)
+{
+	int	*rev_path;
+	int	steps;
+	int	index;
+	int	pos;
+
+	index = 0;
+	pos = farm->end->id;
+	steps = count_steps(queue, farm->start->id, farm->end->id);
+	if (!(rev_path = ft_memalloc((sizeof(int)) * (steps + 1))))
+		return (NULL);
+	rev_path[steps] = pos;
+	while (index <= steps)
+	{
+		rev_path[steps - index] = pos;
+		pos = queue->prev[pos];
+		++index;
+	}
+	return (rev_path);
+}
+
+t_path **path_error(t_path **path)
+{
+	(*path)->len = -1;
+	return (path);
+}
+
+t_path **save_paths(t_queue *queue, t_farm *farm, t_path **path_list)
+{
+	int	*path;
+	size_t steps;
+	t_path *new;
+	int	index;
+	
+	index = 0;
+	set_weights(farm);
+	while (breadth_first_search(farm, queue))
+	{
+		if (!(path = rev_path(farm, queue)))
+			return (path_error(path_list));
+		//here
+	}
+}
+
 int	solve(t_queue *queue, t_farm *farm, t_path **path, int t)
 {
 	t_path *new;
@@ -269,6 +391,12 @@ int	solve(t_queue *queue, t_farm *farm, t_path **path, int t)
 	set_weights(farm);
 	while (optimise(farm, queue,t) == 0 && (t = 1))
 	{
+		new = new_path(NULL, 0);
+		new->longest = 0;
+		save_flow(queue, farm);
+		set_to_n(&queue->visited, queue->length, 0);
+		reset_queue(queue, farm->start->id, farm->end->id);
+		save_paths(queue, farm, &new);
 		//here
 	}
 }
