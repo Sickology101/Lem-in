@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 12:54:48 by marius            #+#    #+#             */
-/*   Updated: 2022/11/29 11:18:45 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/07 10:05:33 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ int	check_weights(t_room *next, t_room *current, t_queue *queue, t_farm *farm)
 		return (0);
 	if (compare_weights(next, current, queue) == 0)
 		return (0);
-	if ((farm->id_table[queue->prev[next->id]] != farm->start) && (check_loops(farm->id_table[queue->prev[next->id]], next, queue, farm) == 0) && (compare_weights(farm->id_table[queue->prev[next->id]], next, q) == 1))
+	if ((farm->id_table[queue->prev[next->id]] != farm->start) && (check_loops(farm->id_table[queue->prev[next->id]], next, queue, farm) == 0) && (compare_weights(farm->id_table[queue->prev[next->id]], next, queue) == 1))
 		queue->prev[queue->prev[next->id]] = next->id;
 	queue->prev[next->id] = current->id;
 	return (1);
@@ -365,6 +365,139 @@ t_path **path_error(t_path **path)
 	return (path);
 }
 
+void	mark_path(t_farm *farm, t_queue *queue)
+{
+	int path;
+	int index;
+	
+	index = 0;
+	path = queue->prev[farm->end->id];
+	while (path != farm->start->id)
+	{
+		queue->visited[path] = 2;
+		path = queue->prev[path];
+	}
+	while (index < queue->length)
+	{
+		queue->prev[index] = -1;
+		queue->queue[index] = -1;
+		if (queue->visited[index] == 1)
+			queue->visited[index] = 0;
+		++index;
+	}
+}
+
+void	add_path(t_path *paths, t_path *new)
+{
+	t_path *tracker;
+	
+	tracker = paths;
+	if ((!paths) || (!new))
+		return ;
+	while (tracker->next != NULL)
+	{
+		tracker = tracker->next;
+	}
+	tracker->next = new;
+}
+
+t_path *clean_path(t_path *path_list)
+{
+	t_path *temp;
+	
+	if (path_list->path == NULL && path_list->next->path != NULL)
+	{
+		path_list->next->max = path_list->max;
+		path_list->next->division = path_list->division;
+		path_list->next->longest = path_list->longest;
+		temp = path_list;
+		path_list = path_list->next;
+		ft_memdel((void *)&temp);
+	}
+	return (path_list);
+}
+
+int	*get_path_lengths(t_farm *farm, t_path *paths, int *total)
+{
+	int index;
+	int *steps;
+	t_path *path;
+	
+	index = 0;
+	path = paths;
+	if (!(steps = (int *)ft_memalloc(sizeof(int) * farm->max_paths)))
+		return (NULL);
+	while (index < farm->max_paths)
+	{
+		steps[index] = path->len;
+		total[0] = total[0] + steps[index];
+		++index;
+		path = path->next;
+	}
+	return (steps);
+}
+
+int *calculate_divide(int *ant_div, t_farm *farm, int total, int *steps)
+{
+	int index;
+
+	index = 0;
+	total = (total + farm->ants) / farm->max_paths;
+	while (index < farm->max_paths)
+	{
+		ant_div[index] = total - steps[index];
+		++index;
+	}
+	return (ant_div);
+}
+
+int get_longest(int *ant_division, int *steps, int max)
+{
+	int index;
+	int longest;
+
+	index = -1;
+	longest = 0;
+	while (++index < max)
+	{
+		if (longest < steps[index] + ant_division[index] - 1)
+			longest = steps[index] + ant_division[index] - 1;
+	}
+	return (longest);
+}
+
+int	*divide_ants(t_farm *farm, t_path *paths)
+{
+	int	*ant_division;
+	int	*steps;
+	int total;
+	
+	total = 0;
+	if (!(ant_division = (int *)ft_memalloc(sizeof(int) * paths->max)))
+		return (NULL);
+	farm->max_paths = paths->max;
+	if (paths->max == 1)
+	{
+		ant_division[0] = farm->ant_nb;
+		return (ant_division);
+	}
+	if ((steps = get_path_lengths(farm, paths, &total)) == NULL)
+		return (NULL);
+	ant_division = calculate_divide(ant_division, farm, total, steps);
+	paths->longest = get_longest(ant_division, steps, paths->max);
+	ft_memdel((void *)&steps);
+	return (ant_division);
+}
+
+t_path	**set_path(t_path **path_list, int index, t_farm *farm)
+{
+	*path_list = clean_path(*path_list);
+	(*path_list)->max = index;
+	if (!((*path_list)->division = divide_ants(farm, *path_list)))
+		(*path_list)->len = -1;
+	return (path_list);
+}
+
 t_path **save_paths(t_queue *queue, t_farm *farm, t_path **path_list)
 {
 	int	*path;
@@ -378,7 +511,31 @@ t_path **save_paths(t_queue *queue, t_farm *farm, t_path **path_list)
 	{
 		if (!(path = rev_path(farm, queue)))
 			return (path_error(path_list));
-		//here
+		steps = count_steps(queue, farm->start->id, farm->end->id);
+		mark_path(farm, queue);
+		if (!(new = new_path(path, steps + 1)))
+			return (path_error(path_list));
+		ft_memdel((void *)&path);
+		add_path(*path_list, new);
+		++index;
+	}
+	path_list = set_path(path_list, index, farm);
+	return (path_list);
+}
+
+void	free_path(t_path *path_list)
+{
+	t_path *tracker;
+
+	tracker = path_list;
+	while (tracker != NULL)
+	{
+		path_list = path_list->next;
+		if (tracker->division != NULL)
+			ft_memdel((void *)&tracker->division);
+		ft_memdel((void *)&tracker->path);
+		ft_memdel((void *)&tracker);
+		tracker = path_list;
 	}
 }
 
@@ -397,7 +554,133 @@ int	solve(t_queue *queue, t_farm *farm, t_path **path, int t)
 		set_to_n(&queue->visited, queue->length, 0);
 		reset_queue(queue, farm->start->id, farm->end->id);
 		save_paths(queue, farm, &new);
-		//here
+		if (new->len == -1)
+			return (-1);
+		if ((*path)->longest == 0 || (*path)->longest > new->longest)
+		{
+			free_path((*path));
+			*path = new;
+		}
+		else
+			free_path(new);
+		clear_queue(queue);
+	}
+	return ((t = 1) ? 0 : -1);
+}
+
+int find_last_ant(t_farm *farm, int *path)
+{
+	int index;
+	
+	index = 0;
+	while (path[index] != farm->end->id)
+		++index;
+	while (index != 0 && farm->id_table[path[index]]->empty == -1)
+		--index;
+	return (index + 1);
+}
+
+t_path *reset_ants(int *x, int *index, t_path *paths)
+{
+	x[0] = 0;
+	index[0] = -1;
+	return (paths);
+}
+
+int check_print_space(int x)
+{
+	if (x != 0)
+		ft_putchar(' ');
+	x = 1;
+	return (x);
+}
+
+int reach_finish(int *path, t_farm *farm, int index, int *x)
+{
+	if (path[index] == farm->end->id)
+	{
+		x[0] = check_print_space(x[0]);
+		ft_printf("L%d-%s",farm->id_table[path[index - 1]]->empty, farm->id_table[path[index]]->name);
+		if (index >= 1)
+			farm->id_table[path[index - 1]]->empty = -1;
+		return (1);
+	}
+	return (0);
+}
+
+void	move_ant(int *path, t_farm *farm, int index, int *x)
+{
+	if (farm->id_table[path[index]]->empty == -1 && index > 1 && farm->id_table[path[index - 1]]->empty != -1)
+	{
+		x[0] = check_print_space(x[0]);
+		farm->id_table[path[index]]->empty = farm->id_table[path[index - 1]]->empty;
+		farm->id_table[path[index - 1]]->empty = -1;
+		ft_printf("L%d-%s", farm->id_table[path[index]]->empty, farm->id_table[path[index]]->name);
+	}
+}
+
+void	move_ants_on_path(t_farm *farm, int *path, int *finished_ants, int *x)
+{
+	int	index;
+	
+	index = find_last_ant(farm, path);
+	if (path[0] == farm->start->id && path[1] == farm->end->id)
+		return ;
+	while (index != 0)
+	{
+		if ((reach_finish(path, farm, index, x)) == 1)
+			++finished_ants[0];
+		else if (finished_ants[0] < farm->ants)
+			move_ant(path, farm, index, x);
+		--index;
+	}
+}
+
+int send_new_ant(t_farm *farm, int *path, int mov, int *fin)
+{
+	int index;
+
+	index = 0;
+	if (mov <= farm->ants && farm->id_table[path[1]]->empty == -1)
+	{
+		++mov;
+		farm->id_table[path[1]]->empty = mov;
+		if (path[1] == farm->end->id)
+		{
+			farm->id_table[path[1]]->empty = -1;
+			++fin[0];
+		}
+		ft_printf("L%d-%s", mov, farm->id_table[path[1]]->name);
+		++index;
+	}
+	return (mov);
+}
+
+void send_ants(t_farm *farm, t_path *paths, int mv_ants, int x)
+{
+	int	finished_ants;
+	int	index1;
+	int	index2;
+	t_path	*path;
+
+	mv_ants = 0;
+	index2 = 0;
+	finished_ants = 0;
+	while (finished_ants < farm->ants && (++index2 || 1))
+	{
+		path = reset_ants(&x, &index1, paths);
+		while (++index1 < paths->max)
+		{
+			move_ants_on_path(farm, path->path, &finished_ants, &x);
+			if (mv_ants < farm->ants && paths->division[index1] > 0)
+			{
+				x = check_print_space(x);
+				mv_ants = send_new_ant(farm, path->path, mv_ants, &finished_ants);
+				--paths->division[index1];
+			}
+			path = path->next;
+		}
+		ft_putchar('\n');
 	}
 }
 
@@ -405,7 +688,6 @@ int		generate(t_farm *farm)
 {
 	t_queue queue;
 	t_path	*path_list;
-	int	index;
 
 	if (init_queue(&queue, farm) < 0)
 	{
@@ -413,8 +695,15 @@ int		generate(t_farm *farm)
 		free_queue(&queue);
 		return (-1);
 	}
-	if (solve(&queue, farm, &path_list, 0) == -1)
+if (solve(&queue, farm, &path_list, 0) == -1) // segfault happens here!
 	{
-		
+		ft_printf("ERROR\n");
+		free_queue(&queue);
+		free_path(path_list);
+		return (-1);
 	}
+	send_ants(farm, path_list, farm->ants, 0);
+	free_path(path_list);
+	free_queue(&queue);
+	return (0);
 }

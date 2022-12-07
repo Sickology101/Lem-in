@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:53:18 by marius            #+#    #+#             */
-/*   Updated: 2022/11/24 12:46:13 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/07 09:52:18 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,34 +210,6 @@ char	*check_syntax(char *line)
 	return (line);
 }
 
-int	get_room(t_farm *farm, t_room *room)
-{
-	char	*line;
-	int		ret;
-	long	id;
-	
-	id = 0;
-	line = NULL;
-	ret = parse_line(0, &line, farm, 2);
-	while (ret > 0 && line && check_line(line, 0) != -1)
-	{
-		if (line && line[0] == '#')
-		{
-			if (check_comment(farm, line) == -1)
-				return (error_free(line));
-		}
-		else if (line && ft_strchr(line, '-') == NULL)
-				if ((!(line) || (line = check_syntax(line)) == NULL) || (room = new_room(farm, room, line, id++)) == NULL)
-					return (error_free(line));
-		ft_memdel((void *)&line);
-		ret = parse_line(0, &line, farm, 2);
-		if (line && check_line(line, 1) != -1 && ((farm->line = line)))
-			return (0);
-	}
-	ft_memdel((void *)&line);
-	return ((ret > 0) ? 0 : -1);
-}
-
 int	room_exist(char *room, t_farm *farm)
 {
 	t_room *temp;
@@ -260,7 +232,7 @@ int	init_room(t_farm *farm, t_room *room, char *line, int id)
 	name_size = 0;
 	while (line[name_size] != ' ')
 		name_size++;
-	if (!(room->name = ft_strndup(line,name_size)))
+	if (!(room->name = strndup(line,name_size))) //don't FORGET TO FIX THIS
 		return (-1);
 	if (room_exist(room->name, farm) == -1)
 		return (-1);
@@ -300,6 +272,34 @@ t_room	*new_room(t_farm *farm, t_room *room, char *line, long id)
 	if (init_room(farm, room, line, id) == -1)
 		return (NULL);
 	return (room);
+}
+
+int	get_room(t_farm *farm, t_room *room)
+{
+	char	*line;
+	int		ret;
+	long	id;
+	
+	id = 0;
+	line = NULL;
+	ret = parse_line(0, &line, farm, 2);
+	while (ret > 0 && line && check_line(line, 0) != -1)
+	{
+		if (line && line[0] == '#')
+		{
+			if (check_comment(farm, line) == -1)
+				return (error_free(line));
+		}
+		else if (line && ft_strchr(line, '-') == NULL)
+				if ((!(line) || (line = check_syntax(line)) == NULL) || (room = new_room(farm, room, line, id++)) == NULL)
+					return (error_free(line));
+		ft_memdel((void *)&line);
+		ret = parse_line(0, &line, farm, 2);
+		if (line && check_line(line, 1) != -1 && ((farm->line = line)))
+			return (0);
+	}
+	ft_memdel((void *)&line);
+	return ((ret > 0) ? 0 : -1);
 }
 
 int	create_table(t_farm *farm, t_room *room)
@@ -353,7 +353,7 @@ char *get_rooms_name(char *line, int mode)
 		while (line[room_length] != '\0')
 			room_length++;
 	}
-	room = ft_strndup(line, room_length);
+	room = strndup(line, room_length); //don't FORGET TO FIX THIS
 	return (room);
 }
 
@@ -366,7 +366,7 @@ int	room_exist2(t_farm *farm, char *room, t_room **ids, int mode)
 	{
 		if (ft_strcmp(room, farm->id_table[index++]->name) == 0)
 		{
-			ids[mode] = farm->id_table[i - 1];
+			ids[mode] = farm->id_table[index - 1];
 			return (1);
 		}
 	}
@@ -440,7 +440,7 @@ int	read_map(t_farm *farm, t_room *room)
 	farm->input = start;
 	farm->input_start = start;
 	room->next = NULL;
-	if(get_ants(farm) != 0 || get_room(farm, room) != 0 || create_table(farm, room) != 0 || get_links(farm) != 0 || create_link_list(farm) != 0)// here
+	if(get_ants(farm) != 0 || get_room(farm, room) != 0 || create_table(farm, room) != 0 || get_links(farm) != 0 || create_link_list(farm) != 0)
 	{
 		ft_printf("Error\n");
 		return (-1);

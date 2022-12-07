@@ -6,7 +6,7 @@
 #    By: marius <marius@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/26 10:11:17 by marius            #+#    #+#              #
-#    Updated: 2022/11/14 11:31:14 by marius           ###   ########.fr        #
+#    Updated: 2022/12/07 09:43:01 by marius           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME		=	lemin
 LIBFT		=	libft/libftprintf.a
 FLAGS		=	-Wall -Wextra -Werror -I includes -I libft/includes -I libft/libft
 
-SRC		=	main.c read_map.c
+SRC		=	main.c read_map.c solve.c
 
 LIBFT_DIR	=	libft/
 SRC_DIR		=	srcs/

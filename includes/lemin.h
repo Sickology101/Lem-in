@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:07:38 by marius            #+#    #+#             */
-/*   Updated: 2022/11/24 14:37:30 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/07 09:50:20 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ typedef struct s_farm
 	int	ants;
 	int	flags;
 	char	*line;
+	int		max_paths;
+	int		ant_nb;
 	t_room	*start;
 	t_room	*end;
 	t_input *input;
@@ -70,6 +72,9 @@ typedef struct s_farm
 }				t_farm;
 
 int	read_map(t_farm *farm, t_room *room);
+int		generate(t_farm *farm);
+int	error_free(char *line);
+int	free_links(char *line, char **rooms, int ret);
 
 #endif
 
