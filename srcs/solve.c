@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   solve.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 12:54:48 by marius            #+#    #+#             */
-/*   Updated: 2022/12/07 10:05:33 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/07 21:20:31 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemin.h"
+#include <stdio.h>
 
 int	set_to_n(int **set, int	len, int n)
 {
@@ -310,10 +311,12 @@ int	breadth_first_search(t_farm *farm, t_queue *queue)
 	int	node;
 	
 	index = -1;
+	printf (" \b IN BFS NOW, queue->length is: %d\n", queue->length);
 	set_to_n(&queue->queue, queue->length, -1);
 	reset_queue(queue, farm->start->id, farm->end->id);
 	while (++index < queue->length && queue->visited[farm->end->id] != 1 && queue->queue[index] >= 0)
 	{
+		printf("In a while loop in BFS, index is: %d\n", index);
 		node = queue->queue[index];
 		find_neighbours(queue, farm->id_table[node]);
 	}
@@ -321,6 +324,7 @@ int	breadth_first_search(t_farm *farm, t_queue *queue)
 		return (-1);
 	if (queue->flow[farm->start->id][farm->end->id] == 1 && queue->prev[farm->end->id] == farm->start->id)
 		queue->flow[farm->start->id][farm->end->id] = 0;
+	printf("\nBFS returning zero now\n");
 	return (0);
 }
 
@@ -504,22 +508,31 @@ t_path **save_paths(t_queue *queue, t_farm *farm, t_path **path_list)
 	size_t steps;
 	t_path *new;
 	int	index;
-	
+	int count = 0;
+
+	printf("\n WE ARE IN SAVE PATHS \n");
 	index = 0;
 	set_weights(farm);
+	printf("\n set weights OK \n");
 	while (breadth_first_search(farm, queue))
 	{
+		printf("\n while loop BFS entered times: %d\n", ++count);
 		if (!(path = rev_path(farm, queue)))
 			return (path_error(path_list));
 		steps = count_steps(queue, farm->start->id, farm->end->id);
 		mark_path(farm, queue);
 		if (!(new = new_path(path, steps + 1)))
 			return (path_error(path_list));
+		printf("\n About to memdel  \n");
 		ft_memdel((void *)&path);
+		printf("\n memdelled \n");
 		add_path(*path_list, new);
+		printf("\n Add path executed \n");
 		++index;
 	}
+	printf("\n Left BFS while loop, executing set_path \n");
 	path_list = set_path(path_list, index, farm);
+	printf("\n EXITING SAVE PATHS \n");
 	return (path_list);
 }
 
