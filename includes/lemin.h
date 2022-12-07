@@ -6,13 +6,15 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:07:38 by marius            #+#    #+#             */
-/*   Updated: 2022/12/07 09:50:20 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/07 18:10:42 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEMIN_H
 # define LEMIN_H
 # include "ft_printf.h"
+
+# define __MAX_INT__ 2147483647
 
 typedef struct s_path
 {

@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/24 12:54:48 by marius            #+#    #+#             */
-/*   Updated: 2022/12/07 10:05:33 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/07 19:26:20 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ t_path *new_path(int *path, int len)
 		if (!(new->path = ft_memalloc(sizeof(int) * (len + 1))))
 			return (NULL);
 		ft_memcpy(new->path, path, ((len) * sizeof(int)));
-		new->len = 0;
+		new->len = len;
 	}
 	new->next = NULL;
 	new->division = NULL;
@@ -109,7 +109,7 @@ void	set_weights(t_farm *farm)
 
 	index = -1;
 	while (++index < farm->room_nb)
-		farm->id_table[index]->weight = 2147483647;
+		farm->id_table[index]->weight = __MAX_INT__;
 	farm->start->weight = 0;
 }
 
@@ -165,7 +165,7 @@ int	compare_weights(t_room *next, t_room *current, t_queue *queue)
 		pos = current->weight - 1;
 	else
 		pos = current->weight + 1;
-	if (pos < next->weight && next->weight != 2147483647)
+	if (pos < next->weight && next->weight != __MAX_INT__)
 	{
 		next->weight = pos;
 		return (1);
@@ -194,7 +194,7 @@ int	find_neg_flow(t_queue *queue, t_room *room, t_farm *farm)
 	index = 0;
 	while (index < room->links_nb)
 	{
-		if (farm->id_table[room->links[index]]->weight != 2147483647)
+		if (farm->id_table[room->links[index]]->weight != __MAX_INT__)
 			check_weights(farm->id_table[room->links[index]], room, queue, farm);
 		if (queue->visited[room->links[index]] != 1 && queue->flow[room->id][room->links[index]] == -1)
 		{
@@ -219,7 +219,7 @@ int	find_flow(t_queue *queue, t_room *room, int prev_flow, t_farm *farm)
 		return (0);
 	while (index < room->links_nb)
 	{
-		if (farm->id_table[room->links[index]]->weight != 2147483647)
+		if (farm->id_table[room->links[index]]->weight != __MAX_INT__)
 			check_weights(farm->id_table[room->links[index]], room, queue, farm);
 		if (queue->visited[room->links[index]] != 1 && queue->flow[room->id][room->links[index]] != 1 && (room != farm->start || room->links[index] != farm->end->id))
 		{
@@ -466,6 +466,52 @@ int get_longest(int *ant_division, int *steps, int max)
 	return (longest);
 }
 
+int *split_remainder(int *ant_division, int remainder, t_path **paths)
+{
+	int index;
+	int full;
+
+	full = 0;
+	while (remainder > 0)
+	{
+		index = 0;
+		while (index < (*paths)->max)
+		{
+			if (ant_division[index] + 1 <= (*paths)->longest)
+			{
+				--remainder;
+				++ant_division[index];
+			}
+			if (ant_division[index] >= (*paths)->longest)
+				++full;
+			if (full == (*paths)->max)
+			{
+				full = 0;
+				++(*paths)->longest;
+			}
+			++index;
+		}
+	}
+	return (ant_division);
+}
+
+int *check_total_ants(int *ant_division, t_farm *farm, t_path **paths)
+{
+	int index;
+	int total;
+
+	index = 0;
+	total = 0;
+	while (index < (*paths)->max)
+	{
+		total = total + ant_division[index];
+		++index;
+	}
+	if (total < farm->ants)
+		ant_division = split_remainder(ant_division, farm->ants - total, paths);
+	return (ant_division);
+}
+
 int	*divide_ants(t_farm *farm, t_path *paths)
 {
 	int	*ant_division;
@@ -485,6 +531,8 @@ int	*divide_ants(t_farm *farm, t_path *paths)
 		return (NULL);
 	ant_division = calculate_divide(ant_division, farm, total, steps);
 	paths->longest = get_longest(ant_division, steps, paths->max);
+	ant_division = check_total_ants(ant_division, farm, &paths); 
+	paths->longest = get_longest(ant_division, steps, paths->max); //HERE
 	ft_memdel((void *)&steps);
 	return (ant_division);
 }
@@ -507,7 +555,7 @@ t_path **save_paths(t_queue *queue, t_farm *farm, t_path **path_list)
 	
 	index = 0;
 	set_weights(farm);
-	while (breadth_first_search(farm, queue))
+	while (breadth_first_search(farm, queue) == 0)
 	{
 		if (!(path = rev_path(farm, queue)))
 			return (path_error(path_list));
@@ -539,21 +587,21 @@ void	free_path(t_path *path_list)
 	}
 }
 
-int	solve(t_queue *queue, t_farm *farm, t_path **path, int t)
+int	solve(t_queue *queue, t_farm *farm, t_path **path, int t) // edmondskarp
 {
 	t_path *new;
 	
 	*path = new_path(NULL, 0);
 	(*path)->longest = 0;
 	set_weights(farm);
-	while (optimise(farm, queue,t) == 0 && (t = 1))
+	while (optimise(farm, queue,t) == 0 && (t = 1)) // SEGFAULT HAPPENS HERE, if more than 1 iteration through while!
 	{
 		new = new_path(NULL, 0);
 		new->longest = 0;
 		save_flow(queue, farm);
 		set_to_n(&queue->visited, queue->length, 0);
 		reset_queue(queue, farm->start->id, farm->end->id);
-		save_paths(queue, farm, &new);
+		save_paths(queue, farm, &new); // HERE!
 		if (new->len == -1)
 			return (-1);
 		if ((*path)->longest == 0 || (*path)->longest > new->longest)
@@ -565,7 +613,8 @@ int	solve(t_queue *queue, t_farm *farm, t_path **path, int t)
 			free_path(new);
 		clear_queue(queue);
 	}
-	return ((t = 1) ? 0 : -1);
+	ft_printf("\nHERE!\n");
+	return ((t == 1) ? 0 : -1);
 }
 
 int find_last_ant(t_farm *farm, int *path)
@@ -656,7 +705,7 @@ int send_new_ant(t_farm *farm, int *path, int mov, int *fin)
 	return (mov);
 }
 
-void send_ants(t_farm *farm, t_path *paths, int mv_ants, int x)
+int send_ants(t_farm *farm, t_path *paths, int mv_ants, int x)
 {
 	int	finished_ants;
 	int	index1;
@@ -682,9 +731,10 @@ void send_ants(t_farm *farm, t_path *paths, int mv_ants, int x)
 		}
 		ft_putchar('\n');
 	}
+	return (index2);
 }
 
-int		generate(t_farm *farm)
+int		generate(t_farm *farm) // prev known as solve
 {
 	t_queue queue;
 	t_path	*path_list;
@@ -695,7 +745,7 @@ int		generate(t_farm *farm)
 		free_queue(&queue);
 		return (-1);
 	}
-if (solve(&queue, farm, &path_list, 0) == -1) // segfault happens here!
+	if (solve(&queue, farm, &path_list, 0) == -1) // segfault happens here!
 	{
 		ft_printf("ERROR\n");
 		free_queue(&queue);

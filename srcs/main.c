@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:19:50 by marius            #+#    #+#             */
-/*   Updated: 2022/12/07 10:03:50 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/07 19:17:46 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	error_free(char *line)
 	return (-1);
 }
 
-int	free_links(char *line, char **rooms, int ret)
+int	free_links(char *line, char **rooms, int ret) 
 {
 	ft_memdel((void *)&rooms[0]);
 	ft_memdel((void *)&rooms[1]);

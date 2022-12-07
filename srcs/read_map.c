@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 14:53:18 by marius            #+#    #+#             */
-/*   Updated: 2022/12/07 09:52:18 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/07 19:23:11 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	parse_line(int fd, char **line, t_farm *farm, int origin)
 	return (ret);
 }
 
-int	delete_line(char *line)
+int	delete_line(char *line) // validated
 {
 	ft_memdel((void *)&line);
 	return (-1);
@@ -90,7 +90,7 @@ int	get_num(char *str)
 	while (ft_isdigit(str[index]))
 	{
 		n = n * 10 + str[index] - '0';
-		if (n > 2147483648)
+		if (n > __MAX_INT__)
 			break ;
 		index++;
 	}
@@ -98,7 +98,7 @@ int	get_num(char *str)
 	return (n);
 }
 
-static int	get_ants(t_farm *farm)
+static int	get_ants(t_farm *farm) // validated
 {
 	int	index;
 	char	*line;
@@ -114,7 +114,7 @@ static int	get_ants(t_farm *farm)
 			if (ft_isdigit(line[index++]) != 1)
 				return (delete_line(line));
 		}
-		if ((nb = get_num(line)) == 0 || nb > 2147483647 || nb <= 0 || ft_strlen(line) > 10)
+		if ((nb = get_num(line)) == 0 || nb > __MAX_INT__ || nb <= 0 || ft_strlen(line) > 10)
 			return(delete_line(line));
 		farm->ants = nb; 
 	}
@@ -127,7 +127,7 @@ static int	get_ants(t_farm *farm)
 	mode = 0 : line is not a link and is a comment return (0)
 	mode = 1 : line is not a link and not a comment return (0)
 */
-int	check_line(char *line, int mode)
+int	check_line(char *line, int mode) //validated
 {
 	if (mode == 0)
 	{
@@ -146,7 +146,7 @@ int	check_line(char *line, int mode)
 	return (0);
 }
 
-int check_comment(t_farm *farm, char *line)
+int check_comment(t_farm *farm, char *line) //validated
 {
 	if (ft_strcmp(line, "##start") == 0)
 	{
@@ -171,7 +171,7 @@ int check_comment(t_farm *farm, char *line)
 	return (0);
 }
 
-int	check_coord(char *line)
+int	check_coord(char *line) //validated
 {
 	char	*temp;
 	int		index;
@@ -189,7 +189,7 @@ int	check_coord(char *line)
 	return (0);
 }
 
-char	*check_syntax(char *line)
+char	*check_syntax(char *line) //validated
 {
 	int		index;
 	char	*temp;
@@ -259,7 +259,7 @@ t_room	*new_room(t_farm *farm, t_room *room, char *line, long id)
 	t_room	*temp;
 
 	temp = room;
-	if (id > 2147483647)
+	if (id > __MAX_INT__)
 		return (NULL);
 	if (room->name != NULL)
 	{
@@ -302,7 +302,7 @@ int	get_room(t_farm *farm, t_room *room)
 	return ((ret > 0) ? 0 : -1);
 }
 
-int	create_table(t_farm *farm, t_room *room)
+int	create_table(t_farm *farm, t_room *room) //validated
 {
 	if (farm->start == NULL || farm->end == NULL)
 	{
@@ -338,7 +338,7 @@ int	init_links(t_farm *farm, char **room)
 	return (0);
 }
 
-char *get_rooms_name(char *line, int mode)
+char *get_rooms_name(char *line, int mode) //validated
 {
 	char *room;
 	int		room_length;
@@ -357,7 +357,7 @@ char *get_rooms_name(char *line, int mode)
 	return (room);
 }
 
-int	room_exist2(t_farm *farm, char *room, t_room **ids, int mode)
+int	room_exist2(t_farm *farm, char *room, t_room **ids, int mode) // validated
 {
 	int	index;
 	
@@ -373,7 +373,7 @@ int	room_exist2(t_farm *farm, char *room, t_room **ids, int mode)
 	return (0);
 }
 
-void	save_links(t_farm *farm, t_room **ids)
+void	save_links(t_farm *farm, t_room **ids) //validated
 {
 	farm->links[ids[0]->id][ids[1]->id] = 1;
 	ids[0]->links_nb++;
@@ -381,7 +381,7 @@ void	save_links(t_farm *farm, t_room **ids)
 	ids[1]->links_nb++;
 }
 
-int	get_links(t_farm *farm)
+int	get_links(t_farm *farm) //validated
 {
 	int	ret;
 	char *line;
@@ -405,7 +405,7 @@ int	get_links(t_farm *farm)
 	return ((ret >= 0) ? 0 : -1);
 }
 
-int	create_link_list(t_farm *farm)
+int	create_link_list(t_farm *farm) //validated
 {
 	int	index1;
 	int	index2;
@@ -431,7 +431,7 @@ int	create_link_list(t_farm *farm)
 	return (0);
 }
 
-int	read_map(t_farm *farm, t_room *room)
+int	read_map(t_farm *farm, t_room *room) // validated (get_input)
 {
 	t_input	*start;
 	
@@ -439,7 +439,6 @@ int	read_map(t_farm *farm, t_room *room)
 		return (-1);
 	farm->input = start;
 	farm->input_start = start;
-	room->next = NULL;
 	if(get_ants(farm) != 0 || get_room(farm, room) != 0 || create_table(farm, room) != 0 || get_links(farm) != 0 || create_link_list(farm) != 0)
 	{
 		ft_printf("Error\n");
