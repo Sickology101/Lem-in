@@ -6,7 +6,7 @@
 #    By: marius <marius@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/26 10:11:17 by marius            #+#    #+#              #
-#    Updated: 2022/12/07 09:43:01 by marius           ###   ########.fr        #
+#    Updated: 2022/12/08 13:33:40 by marius           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME		=	lemin
 LIBFT		=	libft/libftprintf.a
 FLAGS		=	-Wall -Wextra -Werror -I includes -I libft/includes -I libft/libft
 
-SRC		=	main.c read_map.c solve.c
+SRC		=	ant_helper.c breadthsearch.c edmondkarps.c ft_free.c read_file.c get_links.c get_room.c gnl_store.c main.c new_room.c optimize_ants.c path_functions.c queue_functions.c save_path.c send_ants.c solve.c weight_functions.c
 
 LIBFT_DIR	=	libft/
 SRC_DIR		=	srcs/
