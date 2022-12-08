@@ -3,84 +3,114 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/06 15:55:54 by mangheli          #+#    #+#             */
-/*   Updated: 2022/05/24 10:38:28 by marius           ###   ########.fr       */
+/*   Created: 2021/12/13 15:10:23 by parkharo          #+#    #+#             */
+/*   Updated: 2022/12/08 22:02:49 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static	char	*read_file(char *savebuf, const int fd, int *error)
+static int	extract_cache(char **newline, char **cache, char **line)
 {
-	int		ret;
-	char	*buf;
-
-	buf = malloc(sizeof(char) * (BUFF_SIZE + 1));
-	ret = 1;
-	while (ret > 0)
+	*newline = NULL;
+	if (*cache)
 	{
-		ret = read(fd, buf, BUFF_SIZE);
-		buf[ret] = '\0';
-		if (savebuf == NULL && buf != NULL)
-			savebuf = ft_strjoin(buf, "\0");
+		*newline = ft_chrsep(cache, '\n');
+		if (*newline)
+		{
+			*line = ft_strdup(*cache);
+			ft_strcpy(*cache, *newline);
+		}
 		else
-			savebuf = ft_strupdate(savebuf, buf);
-		if (ft_strchr(buf, '\n'))
-			break ;
+		{
+			*line = ft_strdup(*cache);
+			ft_strclr(*cache);
+		}
+		if (*line == NULL)
+			return (0);
 	}
-	ft_strdel(&buf);
-	if (ret == -1)
-	{
-		*error = -1;
-		ft_strdel(&savebuf);
-	}
-	return (savebuf);
+	else
+		*line = ft_strnew(1);
+	return (1);
 }
 
-static	char	*get_line(char *savebuf, char **line, int *error)
+static int	update_cache(char **newline, char **cache, char *buf)
 {
-	int		index;
-	char	*temp;
-	int		size;
+	char	*tmp;
 
-	index = 0;
-	size = ft_strlen(savebuf);
-	while (savebuf[index] != '\n' && savebuf[index] != '\0')
-		index++;
-	if (index > 0 && savebuf != NULL)
+	*newline = ft_chrsep(&buf, '\n');
+	if (*newline)
 	{
-		ft_strdel(line);
-		*line = ft_strsub(savebuf, 0, index);
+		tmp = *cache;
+		*cache = ft_strdup(*newline);
+		free(tmp);
+		if (*cache == NULL)
+			return (0);
 	}
-	if (index + 1 <= size)
-	{
-		temp = ft_strsub(savebuf, index + 1, size -1);
-		ft_strdel(&savebuf);
-		savebuf = ft_strupdate(temp, "\0");
-		*error = 1;
-	}
-	if (index + 1 >= size)
-		ft_strdel(&savebuf);
-	if (index != 0)
-		*error = 1;
-	return (savebuf);
+	return (1);
+}
+
+static int	join_free(char **line, char *buf)
+{
+	char	*tmp;
+
+	tmp = *line;
+	*line = ft_strjoin(*line, buf);
+	free (tmp);
+	if (!*line)
+		return (0);
+	return (1);
 }
 
 int	get_next_line(const int fd, char **line)
 {
-	int			error;
-	static char	*savebuf[MAX_FD];
+	int			ret;
+	static char	*cache[MAX_FD];
+	char		buf[BUFF_SIZE + 1];
+	char		*newline;
 
-	if (line == NULL || fd < 0 || BUFF_SIZE <= 0 || fd > MAX_FD)
+	if (fd < 0 || !line || fd >= MAX_FD)
 		return (-1);
-	*line = ft_strdup("");
-	error = 0;
-	if (savebuf[fd] == NULL || ft_strchr(savebuf[fd], '\n') == NULL)
-		savebuf[fd] = read_file(savebuf[fd], fd, &error);
-	if (error == -1 || savebuf[fd] == NULL)
-		return (error);
-	savebuf[fd] = get_line(savebuf[fd], line, &error);
-	return (error);
+	ret = extract_cache(&newline, &cache[fd], line);
+	if (!ret)
+		return (-1);
+	while (ret && !newline)
+	{
+		ret = read(fd, buf, BUFF_SIZE);
+		if (ret == -1)
+			return (-1);
+		buf[ret] = '\0';
+		if (!(update_cache(&newline, &cache[fd], buf)))
+			return (-1);
+		if (!(join_free(line, buf)))
+			return (-1);
+	}
+	if (ret || ft_strlen(*line))
+		return (1);
+	free(*line);
+	return (0);
 }
+
+// int	get_next_line(const int fd, char **line)
+// {
+// 	char	buff[2];
+// 	char	*dup;
+// 	char	*tmp;
+// 	int		ret;
+
+// 	dup = ft_strnew(0);
+// 	while ((ret = read(fd, buff, 1)) > 0)
+// 	{
+// 		buff[1] = 0;
+// 		if (!ft_strcmp(buff, "\n"))
+// 			break ;
+// 		tmp = dup;
+// 		dup = ft_strjoin(dup, buff);
+// 		ft_strdel(&tmp);
+// 	}
+// 	*line = ft_strdup(dup);
+// 	ft_strdel(&dup);
+// 	return (ret);
+// }

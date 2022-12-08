@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strsub.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mangheli <mangheli@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/08 19:11:20 by mangheli          #+#    #+#             */
-/*   Updated: 2021/11/08 19:11:22 by mangheli         ###   ########.fr       */
+/*   Updated: 2022/12/08 22:03:25 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,4 +29,17 @@ char	*ft_strsub(char const *s, unsigned int start, size_t len)
 	}
 	dest[index] = '\0';
 	return (dest);
+}
+
+char	*ft_chrsep(char **stringp, int ch)
+{
+	char	*ptr;
+
+	ptr = ft_strchr(*stringp, ch);
+	if (ptr)
+	{
+		*ptr = '\0';
+		ptr++;
+	}
+	return (ptr);
 }
