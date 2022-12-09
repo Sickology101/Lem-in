@@ -6,7 +6,7 @@
 #    By: marius <marius@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/04 09:27:03 by mangheli          #+#    #+#              #
-#    Updated: 2022/05/28 16:50:13 by marius           ###   ########.fr        #
+#    Updated: 2022/12/09 09:16:59 by marius           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ SRCS = ft_atoi ft_bzero ft_isalnum ft_isalpha ft_isascii ft_isdigit \
 		ft_strnequ ft_strnew ft_strnstr ft_strsplit ft_strstr ft_strsub \
 		ft_strtrim ft_tolower ft_toupper ft_strrchr ft_strncmp \
 		ft_emptyspace ft_lstaddlast ft_utoa ft_strnlen get_next_line \
-		ft_strupdate ft_wordcounter ft_strtab_free 
+		ft_strupdate ft_wordcounter ft_strtab_free ft_strndup 
 SRC := $(addsuffix .c, $(SRCS))
 INC := includes
 CFLAGS := -Wall -Wextra -Werror -O2

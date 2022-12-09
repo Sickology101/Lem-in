@@ -6,16 +6,12 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:53:07 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 12:53:08 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/09 09:43:58 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "lemin.h"
-
-/*
-** Creating a new t_path, given the path in *int form and the path length.
-*/
 
 t_path	*ft_new_path(int *path, int len)
 {
@@ -40,10 +36,6 @@ t_path	*ft_new_path(int *path, int len)
 	return (new_elem);
 }
 
-/*
-** adding a path to our solution set.
-*/
-
 void	ft_add_path(t_path *paths, t_path *new)
 {
 	t_path *tracker;
@@ -56,44 +48,30 @@ void	ft_add_path(t_path *paths, t_path *new)
 	tracker->next = new;
 }
 
-/*
-** Checking for an empty or unused element at beginning of solution set
-** and cleaning it out.
-*/
-
 t_path	*clean_path(t_path *path_list)
 {
-	t_path *tmp;
+	t_path *temp;
 
 	if (path_list->path == NULL && path_list->next->path != NULL)
 	{
 		path_list->next->max = path_list->max;
 		path_list->next->division = path_list->division;
 		path_list->next->longest = path_list->longest;
-		tmp = path_list;
+		temp = path_list;
 		path_list = path_list->next;
-		ft_memdel((void*)&tmp);
+		ft_memdel((void*)&temp);
 	}
 	return (path_list);
 }
 
-/*
-** Cleaning empty element from path. Noting the current max_potentila paths,
-** and calculating the division of ants given this solution set.
-*/
-
-t_path	**set_path(t_path **path_list, int i, t_farm *f)
+t_path	**set_path(t_path **path_list, int i, t_farm *farm)
 {
 	*path_list = clean_path(*path_list);
 	(*path_list)->max = i;
-	if (!((*path_list)->division = divide_ants(f, *path_list)))
+	if (!((*path_list)->division = divide_ants(farm, *path_list)))
 		(*path_list)->len = -1;
 	return (path_list);
 }
-
-/*
-** Freeing each malloced element of a t_path solution set.
-*/
 
 void	free_path(t_path *path_list)
 {

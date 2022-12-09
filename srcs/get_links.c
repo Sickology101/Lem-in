@@ -6,73 +6,51 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:31 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 12:52:32 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/09 09:19:29 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "lemin.h"
 
-/*
-** ==================== init_links ====================
-** Create a squared matrice the size matching rooms number.
-*/
-
-static int	init_links(t_farm *f, char **room)
+static int	init_links(t_farm *farm, char **room)
 {
-	int	i;
+	int	index;
 
-	i = 0;
+	index = 0;
 	room[0] = NULL;
 	room[1] = NULL;
-	if (!(f->links = ft_memalloc(sizeof(int*) * (f->room_nb + 1))))
+	if (!(farm->links = ft_memalloc(sizeof(int*) * (farm->room_nb + 1))))
 		return (-1);
-	while (i < f->room_nb + 1)
-		if (!(f->links[i++] = ft_memalloc(sizeof(int) * (f->room_nb + 1))))
+	while (index < farm->room_nb + 1)
+		if (!(farm->links[index++] = ft_memalloc(sizeof(int) * (farm->room_nb + 1))))
 			return (-1);
 	return (0);
 }
 
-/*
-** ==================== save_links ====================
-** Save links into link's matrice.
-*/
-
-static void	save_links(t_farm *f, t_room **ids)
+static void	save_links(t_farm *farm, t_room **ids)
 {
-	f->links[ids[0]->id][ids[1]->id] = 1;
+	farm->links[ids[0]->id][ids[1]->id] = 1;
 	ids[0]->links_nb++;
-	f->links[ids[1]->id][ids[0]->id] = 1;
+	farm->links[ids[1]->id][ids[0]->id] = 1;
 	ids[1]->links_nb++;
 }
 
-/*
-** ==================== room_exist ====================
-** Check if the room has been stored previously.
-*/
-
-static int	room_exist(t_farm *f, char *room, t_room **ids, int mode)
+static int	room_exist(t_farm *farm, char *room, t_room **ids, int mode)
 {
-	int	i;
+	int	index;
 
-	i = 0;
-	while (i < f->room_nb)
+	index = 0;
+	while (index < farm->room_nb)
 	{
-		if (ft_strcmp(room, f->id_table[i++]->name) == 0)
+		if (ft_strcmp(room, farm->id_table[index++]->name) == 0)
 		{
-			ids[mode] = f->id_table[i - 1];
+			ids[mode] = farm->id_table[index - 1];
 			return (1);
 		}
 	}
 	return (0);
 }
-
-/*
-** ==================== get_rooms_name ====================
-** Mode 1 : get the name of the first room
-** Mode 2 : get the name of the second room
-** Return the name.
-*/
 
 static char	*get_rooms_name(char *line, int mode)
 {
@@ -89,39 +67,33 @@ static char	*get_rooms_name(char *line, int mode)
 		while (line[room_length] != '\0')
 			room_length++;
 	}
-	room = strndup(line, room_length);
+	room = ft_strndup(line, room_length);
 	return (room);
 }
 
-/*
-** ==================== get_links ====================
-** Read stdin, get rooms name, check if they exist and if they do,
-** save the link.
-*/
-
-int			get_links(t_farm *f)
+int			get_links(t_farm *farm)
 {
 	int		ret;
 	char	*line;
 	char	*room[2];
 	t_room	*ids[2];
 
-	if (init_links(f, room) == -1)
+	if (init_links(farm, room) == -1)
 		return (-1);
-	if (f->line && (ret = 1))
-		line = f->line;
+	if (farm->line && (ret = 1))
+		line = farm->line;
 	else
-		ret = gnl_store(0, &line, f, GET_ANTS_LINKS);
+		ret = gnl_store(0, &line, farm, 1);
 	while (ret > 0)
 	{
 		if ((!(line)) || ((room[0] = get_rooms_name(line, 1)) == NULL)	\
-		|| (room_exist(f, room[0], ids, 0) != 1)						\
+		|| (room_exist(farm, room[0], ids, 0) != 1)						\
 		|| ((room[1] = get_rooms_name(line, 2)) == NULL)			\
-		|| (room_exist(f, room[1], ids, 1) != 1))
+		|| (room_exist(farm, room[1], ids, 1) != 1))
 			return (free_links(line, room, -1));
-		save_links(f, ids);
+		save_links(farm, ids);
 		free_links(line, room, 0);
-		ret = gnl_store(0, &line, f, GET_ANTS_LINKS);
+		ret = gnl_store(0, &line, farm, 1);
 	}
 	return ((ret >= 0) ? 0 : -1);
 }

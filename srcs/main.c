@@ -3,23 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:46:36 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 22:05:25 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/09 09:29:31 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemin.h"
 
-static void	write_input(t_farm *f)
+static void	write_input(t_farm *farm)
 {
-	f->input = f->input_start;
-	while (f->input->line)
+	farm->input = farm->input_start;
+	while (farm->input->line)
 	{
-		ft_putstr(f->input->line);
+		ft_putstr(farm->input->line);
 		ft_putstr("\n");
-		f->input = f->input->next;
+		farm->input = farm->input->next;
 	}
 }
 

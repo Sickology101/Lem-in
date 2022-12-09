@@ -6,43 +6,33 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:53:33 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 12:57:37 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/09 10:12:20 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "lemin.h"
 
-/*
-** We intialise our queueing system. If there is a malloc error, we free
-** any allocated areas and return -1. We then run our edmonds karp function
-** to find the optimal solution set. Should we not find a path, we print an
-** error message, free the queue the allocated head of the path list, and
-** return -1. Finally, if the previous two steps were successful, we send
-** our ants down the paths, printing our moves to the stdout. We then free
-** the queue and the solution set.
-*/
-
-int			solve(t_farm *f)
+int			solve(t_farm *farm)
 {
-	t_queue	q;
+	t_queue	queue;
 	t_path	*path_list;
 
-	if (initialise_queue(&q, f) < 0)
+	if (initialise_queue(&queue, farm) < 0)
 	{
 		ft_printf("ERROR\n");
-		free_queue(&q);
+		free_queue(&queue);
 		return (-1);
 	}
-	if (edmondskarp(&q, f, &path_list, 0) == -1)
+	if (generate(&queue, farm, &path_list, 0) == -1)
 	{
 		ft_printf("ERROR\n");
-		free_queue(&q);
+		free_queue(&queue);
 		free_path(path_list);
 		return (-1);
 	}
-	send_ants(f, path_list, f->ant_nb, 0);
+	send_ants(farm, path_list, farm->ant_nb, 0);
 	free_path(path_list);
-	free_queue(&q);
+	free_queue(&queue);
 	return (0);
 }

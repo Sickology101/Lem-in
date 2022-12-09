@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/03 10:37:25 by mangheli          #+#    #+#             */
-/*   Updated: 2022/12/08 22:03:43 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/09 09:16:46 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,5 +95,6 @@ int		get_next_line(const int fd, char **line);
 char	*ft_strupdate(char *s1, const char *s2);
 int		ft_wordcounter(const char *str, char c);
 void	ft_strtab_free(char **strtab);
+char *ft_strndup(const char *s1, size_t n);
 
 #endif

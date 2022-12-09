@@ -6,7 +6,7 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:07:38 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 13:31:29 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/09 08:40:02 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int					usage(void);
 int					error_free_line(char *line);
 int					solve(t_farm *f);
 int					breadth_first_search(t_farm *f, t_queue *q);
-int					edmondskarp(t_queue *q, t_farm *f, t_path **p, int t);
+int					generate(t_queue *q, t_farm *f, t_path **p, int t);
 int					send_ants(t_farm *f, t_path *paths, int moving_ants, int x);
 void				clear_queue(t_queue *q);
 int					initialise_queue(t_queue *q, t_farm *f);

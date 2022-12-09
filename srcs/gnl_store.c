@@ -6,17 +6,12 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:48 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 12:52:49 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/09 09:28:53 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "lemin.h"
-
-/*
-** ==================== is_com_start_end ====================
-** Checks if the line is start or end command.
-*/
 
 static int	is_com_start_end(char *line)
 {
@@ -27,38 +22,26 @@ static int	is_com_start_end(char *line)
 	return (0);
 }
 
-/*
-** ==================== store ====================
-** Store the line in a new link of chained list.
-*/
-
-static int	store(t_farm *f, char *line, int ret)
+static int	store(t_farm *farm, char *line, int ret)
 {
 	t_input *new;
 
 	if (ret > 0)
 	{
-		f->input->line = ft_strdup(line);
+		farm->input->line = ft_strdup(line);
 		if (!(new = ft_memalloc(sizeof(t_input))))
 			return (-1);
-		f->input->next = new;
-		f->input = new;
+		farm->input->next = new;
+		farm->input = new;
 	}
 	return (0);
 }
 
-/*
-** ====================  ====================
-** In case gnl_store is called when reading ants or links :
-** Checks if command is ##start or ##end.
-** Store the line and return the next line which is not comment.
-*/
-
-static int	read_from_ants_links(t_farm *f, char **line, int ret, int fd)
+static int	read_from_ants_links(t_farm *farm, char **line, int ret, int fd)
 {
 	while (ret > 0 && line[0] && line[0][0] == '#')
 	{
-		if (is_com_start_end(line[0]) == -1 || store(f, line[0], ret) == -1)
+		if (is_com_start_end(line[0]) == -1 || store(farm, line[0], ret) == -1)
 			ret = -1;
 		ft_memdel((void*)line);
 		if (ret != -1)
@@ -67,26 +50,20 @@ static int	read_from_ants_links(t_farm *f, char **line, int ret, int fd)
 	return (ret);
 }
 
-/*
-** ==================== gnl_store ====================
-** Read the next line on stdin and send it to storage.
-** If line is comment, store it and read again until un_commented line
-*/
-
-int			gnl_store(int fd, char **line, t_farm *f, int origin)
+int			gnl_store(int fd, char **line, t_farm *farm, int origin)
 {
 	int ret;
 
 	ret = get_next_line(fd, line);
-	if (ret > 0 && line[0] && line[0][0] == '#' && origin == GET_ANTS_LINKS)
+	if (ret > 0 && line[0] && line[0][0] == '#' && origin == 1)
 	{
-		if ((ret = read_from_ants_links(f, &line[0], ret, fd)) == -1)
+		if ((ret = read_from_ants_links(farm, &line[0], ret, fd)) == -1)
 		{
 			ft_memdel((void*)line);
 			return (-1);
 		}
 	}
-	if (!(store(f, line[0], ret) == 0))
+	if (!(store(farm, line[0], ret) == 0))
 		return (-1);
 	return (ret);
 }

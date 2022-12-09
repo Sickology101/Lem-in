@@ -6,29 +6,18 @@
 /*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:18 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 12:52:19 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/09 08:42:03 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "lemin.h"
 
-/*
-** ==================== free_links ====================
-** Used in get_links to free temporary data if error detected.
-** Free stored ids and line.
-*/
-
 int		ft_delete_line(char *line)
 {
 	ft_memdel((void *)&line);
 	return (-1);
 }
-
-/*
-** ==================== free_links ====================
-** Used in get_links.c to free read rooms.
-*/
 
 int		free_links(char *line, char **rooms, int ret)
 {
@@ -37,11 +26,6 @@ int		free_links(char *line, char **rooms, int ret)
 	ft_memdel((void*)&line);
 	return (ret);
 }
-
-/*
-** ==================== ft_free_input ====================
-** Free the chained list which contains the input.
-*/
 
 void	ft_free_input(t_input *input, t_input *start)
 {
@@ -58,40 +42,29 @@ void	ft_free_input(t_input *input, t_input *start)
 	ft_memdel((void*)&input);
 }
 
-/*
-** ft_free :
-** free all stuff.
-** Receive a pointeur to the first link of the chain r.
-*/
-
-int		ft_free_lemin(t_farm *f, t_room *r)
+int		ft_free_lemin(t_farm *farm, t_room *room)
 {
-	int		i;
-	t_room	*tmp;
+	int		index;
+	t_room	*temp;
 
-	i = 0;
-	while (i < f->room_nb)
-		ft_memdel((void*)&f->links[i++]);
-	while (r)
+	index = 0;
+	while (index < farm->room_nb)
+		ft_memdel((void*)&farm->links[index++]);
+	while (room)
 	{
-		tmp = r->next;
-		ft_memdel((void*)&r->name);
-		ft_memdel((void*)&r->links);
-		ft_memdel((void*)&r);
-		r = tmp;
+		temp = room->next;
+		ft_memdel((void*)&room->name);
+		ft_memdel((void*)&room->links);
+		ft_memdel((void*)&room);
+		room = temp;
 	}
-	ft_memdel((void*)&f->id_table);
-	ft_memdel((void*)&f->links[i]);
-	ft_memdel((void*)&f->links);
-	ft_free_input(f->input, f->input_start);
-	ft_memdel((void*)&f);
+	ft_memdel((void*)&farm->id_table);
+	ft_memdel((void*)&farm->links[index]);
+	ft_memdel((void*)&farm->links);
+	ft_free_input(farm->input, farm->input_start);
+	ft_memdel((void*)&farm);
 	return (-1);
 }
-
-/*
-** ==================== error_free_line ====================
-** Used to clarify returns, free a string and returns -1.
-*/
 
 int		error_free_line(char *line)
 {
