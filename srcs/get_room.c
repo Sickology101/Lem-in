@@ -3,15 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   get_room.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:37 by marius            #+#    #+#             */
-/*   Updated: 2022/12/09 09:25:11 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 15:43:29 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "lemin.h"
+
+int	return_check(int ret)
+{
+	if (ret > 0)
+		return (0);
+	else
+		return (-1);
+}
+
+int	bad_if_return(t_farm **farm, char *line)
+{
+	(*farm)->line = line;
+	return (0);
+}
 
 static int	room_check_coo(char *line)
 {
@@ -31,25 +44,30 @@ static int	room_check_coo(char *line)
 	return (0);
 }
 
-static char	*room_check_syntax(char *line)
+static int	room_check_syntax(char **line)
 {
 	int		index;
 	char	*temp;
 
 	index = 0;
-	temp = line;
-	if (line[0] != '#')
+	temp = *line;
+	if (*line[0] != '#')
 	{
 		while (index <= 3 && temp != NULL)
-			if (((temp = ft_strchr(temp, ' ')) != NULL) && temp++)
-				index++;
-		if (index != 2 || line[0] == 'L' || room_check_coo(line) != 0)
 		{
-			ft_memdel((void*)&line);
-			return (NULL);
+			temp = ft_strchr(temp, ' ');
+			if ((temp != NULL) && temp++)
+				index++;
+		}
+		if (index != 2 || *line[0] == 'L' || room_check_coo(*line) != 0)
+		{
+			ft_memdel((void *)&(*line));
+			return (0);
 		}
 	}
-	return (line);
+	if (!(*line))
+		return (0);
+	return (1);
 }
 
 static int	check_comment(t_farm *farm, char *line)
@@ -96,7 +114,7 @@ static int	dash_comment(char *line, int mode)
 	return (0);
 }
 
-int			get_room(t_room *room, t_farm *farm)
+int	get_room(t_room *room, t_farm *farm)
 {
 	char	*line;
 	int		ret;
@@ -113,14 +131,14 @@ int			get_room(t_room *room, t_farm *farm)
 				return (error_free_line(line));
 		}
 		else if (line && ft_strchr(line, '-') == NULL)
-			if ((!(line) || (line = room_check_syntax(line)) == NULL) 	\
-			|| (room = new_room(farm, room, line, id++)) == NULL)
+			if ((!(line) || (room_check_syntax(&line)) == 0)
+				|| (new_room(farm, &room, line, id++)) == 0)
 				return (error_free_line(line));
-		ft_memdel((void*)&line);
+		ft_memdel((void *)&line);
 		ret = gnl_store(0, &line, farm, 2);
-		if (line && dash_comment(line, 1) != -1 && ((farm->line = line)))
-			return (0);
+		if (line && dash_comment(line, 1) != -1)
+			return (bad_if_return(&farm, line));
 	}
-	ft_memdel((void*)&line);
-	return ((ret > 0) ? 0 : -1);
+	ft_memdel((void *)&line);
+	return (return_check(ret));
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lemin.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:07:38 by marius            #+#    #+#             */
-/*   Updated: 2022/12/09 08:40:02 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 15:30:34 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ typedef struct		s_farm
 */
 int					read_file(t_farm *f, t_room *r);
 int					get_room(t_room *r, t_farm *f);
-t_room				*new_room(t_farm *f, t_room *r, char *line, long id);
+int					new_room(t_farm *f, t_room **r, char *line, long id);
 int					get_links(t_farm *f);
 int					gnl_store(int fd, char **line, t_farm *f, int origin);
 int					usage(void);

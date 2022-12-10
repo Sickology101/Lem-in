@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   path_functions.c                                   :+:      :+:    :+:   */
+/*   path_helper.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:53:07 by marius            #+#    #+#             */
-/*   Updated: 2022/12/09 09:43:58 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 15:11:08 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "lemin.h"
+
+// int	safe_malloc(void *ref, size_t size)
+// {
+// 	*(&ref) = ft_memalloc(size);
+// 	if (!ref)
+// 		return (0);
+// 	return (1);
+// }
 
 t_path	*ft_new_path(int *path, int len)
 {
-	t_path *new_elem;
+	t_path	*new_elem;
 
-	if (!(new_elem = ft_memalloc(sizeof(t_path) + (sizeof(int) * (len + 1)))))
+	new_elem = ft_memalloc(sizeof(t_path) + (sizeof(int) * (len + 1)));
+	if (!(new_elem))
 		return (NULL);
 	if (path == NULL)
 	{
@@ -26,7 +34,8 @@ t_path	*ft_new_path(int *path, int len)
 	}
 	else
 	{
-		if (!(new_elem->path = ft_memalloc(sizeof(int) * (len + 1))))
+		new_elem->path = ft_memalloc(sizeof(int) * (len + 1));
+		if (!(new_elem->path))
 			return (NULL);
 		ft_memcpy(new_elem->path, path, ((len) * sizeof(int)));
 		new_elem->len = len;
@@ -38,7 +47,7 @@ t_path	*ft_new_path(int *path, int len)
 
 void	ft_add_path(t_path *paths, t_path *new)
 {
-	t_path *tracker;
+	t_path	*tracker;
 
 	tracker = paths;
 	if ((!paths) || (!new))
@@ -50,7 +59,7 @@ void	ft_add_path(t_path *paths, t_path *new)
 
 t_path	*clean_path(t_path *path_list)
 {
-	t_path *temp;
+	t_path	*temp;
 
 	if (path_list->path == NULL && path_list->next->path != NULL)
 	{
@@ -59,7 +68,7 @@ t_path	*clean_path(t_path *path_list)
 		path_list->next->longest = path_list->longest;
 		temp = path_list;
 		path_list = path_list->next;
-		ft_memdel((void*)&temp);
+		ft_memdel((void *)&temp);
 	}
 	return (path_list);
 }
@@ -68,23 +77,24 @@ t_path	**set_path(t_path **path_list, int i, t_farm *farm)
 {
 	*path_list = clean_path(*path_list);
 	(*path_list)->max = i;
-	if (!((*path_list)->division = divide_ants(farm, *path_list)))
+	(*path_list)->division = divide_ants(farm, *path_list);
+	if (!((*path_list)->division))
 		(*path_list)->len = -1;
 	return (path_list);
 }
 
 void	free_path(t_path *path_list)
 {
-	t_path *tracker;
+	t_path	*tracker;
 
 	tracker = path_list;
 	while (tracker != NULL)
 	{
 		path_list = path_list->next;
 		if (tracker->division != NULL)
-			ft_memdel((void*)&tracker->division);
-		ft_memdel((void*)&tracker->path);
-		ft_memdel((void*)&tracker);
+			ft_memdel((void *)&tracker->division);
+		ft_memdel((void *)&tracker->path);
+		ft_memdel((void *)&tracker);
 		tracker = path_list;
 	}
 }
