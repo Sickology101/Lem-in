@@ -6,11 +6,12 @@
 /*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:31 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 17:19:26 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/10 18:22:14 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemin.h"
+#include <stdio.h>
 
 static int	init_links(t_farm *farm, char **room)
 {
@@ -87,6 +88,8 @@ int	get_links(t_farm *farm)
 	if (init_links(farm, room) == -1)
 		return (-1);
 	ret = useless_function(farm, &line);
+	if (!line)
+		return (-1);
 	while (ret > 0)
 	{
 		if ((!(line)) || ((get_rooms_name(line, 1, &room[0])) == 0)

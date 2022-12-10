@@ -6,7 +6,7 @@
 /*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:37 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 17:19:58 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/10 18:30:15 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ int	get_room(t_room *room, t_farm *farm)
 		if (line && dash_comment(line, 1) != -1)
 			return (bad_if_return(&farm, line));
 	}
-	ft_memdel((void *)&line);
+	if (ret != 0)
+		ft_memdel((void *)&line);
 	return (return_check(ret));
 }

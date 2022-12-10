@@ -6,7 +6,7 @@
 /*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:25 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 16:03:26 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/10 18:17:39 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static int	get_quantity_ants(t_farm *farm)
 	index = 0;
 	line = NULL;
 	ret = gnl_store(0, &line, farm, 1);
-	if ((ret >= 0) && line)
+	if ((ret > 0) && line)
 	{
 		while (line[index] != '\0')
 		{

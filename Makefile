@@ -6,11 +6,11 @@
 #    By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/26 10:11:17 by marius            #+#    #+#              #
-#    Updated: 2022/12/10 17:20:20 by parkharo         ###   ########.fr        #
+#    Updated: 2022/12/10 17:30:07 by parkharo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		=	lemin
+NAME		=	lem-in
 LIBFT		=	libft/libftprintf.a
 FLAGS		=	-Wall -Wextra -Werror -I includes -I libft/includes -I libft/libft
 
