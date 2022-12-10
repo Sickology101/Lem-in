@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   queue_functions.c                                  :+:      :+:    :+:   */
+/*   queue_helper.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:53:13 by marius            #+#    #+#             */
-/*   Updated: 2022/12/09 09:50:12 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 17:18:43 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "lemin.h"
 
-int		set_to_n(int **set, int length, int n)
+int	set_to_n(int **set, int length, int n)
 {
-	int index;
+	int	index;
 
 	index = -1;
 	while (++index < length)
@@ -23,9 +22,9 @@ int		set_to_n(int **set, int length, int n)
 	return (0);
 }
 
-int		initialise_queue(t_queue *queue, t_farm *farm)
+int	initialise_queue(t_queue *queue, t_farm *farm)
 {
-	int index;
+	int	index;
 
 	index = 0;
 	queue->length = farm->room_nb;
@@ -33,17 +32,12 @@ int		initialise_queue(t_queue *queue, t_farm *farm)
 	queue->prev = NULL;
 	queue->flow = NULL;
 	queue->visited = NULL;
-	if (!(queue->queue = ft_memalloc(sizeof(int) * queue->length)))
-		return (-1);
-	if (!(queue->prev = ft_memalloc(sizeof(int) * queue->length)))
-		return (-1);
-	if (!(queue->visited = ft_memalloc(sizeof(int) * queue->length)))
-		return (-1);
-	if (!(queue->flow = ft_memalloc(sizeof(int *) * queue->length)))
+	if (!(malloc_q(queue)))
 		return (-1);
 	while (index < queue->length)
 	{
-		if (!(queue->flow[index++] = ft_memalloc(sizeof(int) * queue->length)))
+		queue->flow[index] = ft_memalloc(sizeof(int) * queue->length);
+		if (!(queue->flow[index++]))
 			return (-1);
 	}
 	set_to_n(&queue->queue, queue->length, -1);
@@ -74,7 +68,7 @@ void	free_queue(t_queue *queue)
 	index = 0;
 	while (index < queue->length)
 	{
-		ft_memdel((void*)&queue->flow[index]);
+		ft_memdel((void *)&queue->flow[index]);
 		++index;
 	}
 	if (queue->flow != NULL)

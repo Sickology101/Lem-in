@@ -3,19 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   save_path.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:53:22 by marius            #+#    #+#             */
-/*   Updated: 2022/12/09 10:00:16 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 15:56:54 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "lemin.h"
 
 static size_t	count_steps(t_queue *queue, int start, int end)
 {
-	int		steps;
+	int	steps;
 
 	steps = 0;
 	while (end != start)
@@ -26,7 +25,7 @@ static size_t	count_steps(t_queue *queue, int start, int end)
 	return (steps);
 }
 
-static int		*rev_path(t_farm *farm, t_queue *queue)
+static int	*rev_path(t_farm *farm, t_queue *queue)
 {
 	int		*rev_path;
 	int		steps;
@@ -36,7 +35,8 @@ static int		*rev_path(t_farm *farm, t_queue *queue)
 	index = 0;
 	pos = farm->end->id;
 	steps = count_steps(queue, farm->start->id, farm->end->id);
-	if (!(rev_path = ft_memalloc((sizeof(int)) * (steps + 1))))
+	rev_path = ft_memalloc((sizeof(int)) * (steps + 1));
+	if (!(rev_path))
 		return (NULL);
 	rev_path[steps] = pos;
 	while (index <= steps)
@@ -48,7 +48,7 @@ static int		*rev_path(t_farm *farm, t_queue *queue)
 	return (rev_path);
 }
 
-static void		mark_path(t_farm *farm, t_queue *queue)
+static void	mark_path(t_farm *farm, t_queue *queue)
 {
 	int		path;
 	int		index;
@@ -76,7 +76,7 @@ static t_path	**path_error(t_path **path)
 	return (path);
 }
 
-t_path			**save_paths(t_queue *queue, t_farm *farm, t_path **path_list)
+t_path	**save_paths(t_queue *queue, t_farm *farm, t_path **path_list)
 {
 	int		*path;
 	size_t	steps;
@@ -87,13 +87,15 @@ t_path			**save_paths(t_queue *queue, t_farm *farm, t_path **path_list)
 	set_weights(farm);
 	while (breadth_first_search(farm, queue) == 0)
 	{
-		if (!(path = rev_path(farm, queue)))
+		path = rev_path(farm, queue);
+		if (!(path))
 			return (path_error(path_list));
 		steps = count_steps(queue, farm->start->id, farm->end->id);
 		mark_path(farm, queue);
-		if (!(new = ft_new_path(path, steps + 1)))
+		new = ft_new_path(path, steps + 1);
+		if (!(new))
 			return (path_error(path_list));
-		ft_memdel((void*)&path);
+		ft_memdel((void *)&path);
 		ft_add_path(*path_list, new);
 		++index;
 	}

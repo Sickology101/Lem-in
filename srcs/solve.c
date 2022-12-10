@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   solve.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:53:33 by marius            #+#    #+#             */
-/*   Updated: 2022/12/09 10:12:20 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 15:48:55 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "lemin.h"
 
-int			solve(t_farm *farm)
+int	solve(t_farm *farm)
 {
 	t_queue	queue;
 	t_path	*path_list;

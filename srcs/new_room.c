@@ -6,7 +6,7 @@
 /*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:56 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 15:30:10 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/10 17:20:43 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,20 @@ int	new_room(t_farm *farm, t_room **room, char *line, long id)
 	if (init_room(farm, (*room), line, id) == -1)
 		return (0);
 	return (1);
+}
+
+int	return_check(int ret)
+{
+	if (ret > 0)
+		return (0);
+	else
+		return (-1);
+}
+
+int	return_check2(int ret)
+{
+	if (ret >= 0)
+		return (0);
+	else
+		return (-1);
 }

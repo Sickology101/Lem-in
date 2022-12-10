@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   weight_functions.c                                 :+:      :+:    :+:   */
+/*   weight_helper.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:53:38 by marius            #+#    #+#             */
-/*   Updated: 2022/12/09 10:31:16 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 16:56:11 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "lemin.h"
 
-void		set_weights(t_farm *farm)
+void	set_weights(t_farm *farm)
 {
-	int index;
+	int	index;
 
 	index = -1;
 	while (++index < farm->room_nb)
@@ -25,7 +24,7 @@ void		set_weights(t_farm *farm)
 
 static int	compare_weights(t_room *next, t_room *current, t_queue *queue)
 {
-	int pos;
+	int	pos;
 
 	if (queue->flow[current->id][next->id] == 1)
 		return (0);
@@ -41,16 +40,16 @@ static int	compare_weights(t_room *next, t_room *current, t_queue *queue)
 	return (0);
 }
 
-static int	check_loops(t_room *current, t_room *next, t_queue *queue, t_farm *farm)
+static int	check_loops(t_room *c, t_room *next, t_queue *queue, t_farm *farm)
 {
-	int index;
+	int	index;
 
-	index = queue->prev[current->id];
+	index = queue->prev[c->id];
 	while (index != farm->end->id && index != farm->start->id)
 	{
 		if (index == next->id)
 			return (1);
-		if (index == current->id)
+		if (index == c->id)
 			return (1);
 		if (index == queue->prev[next->id])
 			return (1);
@@ -59,18 +58,18 @@ static int	check_loops(t_room *current, t_room *next, t_queue *queue, t_farm *fa
 	return (0);
 }
 
-int			check_weights(t_room *next, t_room *current, t_queue *queue, t_farm *farm)
+int	check_weights(t_room *next, t_room *current, t_queue *q, t_farm *farm)
 {
 	if (next == farm->start || current == farm->start || next == current)
 		return (0);
-	if (check_loops(current, next, queue, farm) == 1)
+	if (check_loops(current, next, q, farm) == 1)
 		return (0);
-	if (compare_weights(next, current, queue) == 0)
+	if (compare_weights(next, current, q) == 0)
 		return (0);
-	if ((farm->id_table[queue->prev[next->id]] != farm->start) &&
-		(check_loops(farm->id_table[queue->prev[next->id]], next, queue, farm) == 0)
-		&& (compare_weights(farm->id_table[queue->prev[next->id]], next, queue) == 1))
-		queue->prev[queue->prev[next->id]] = next->id;
-	queue->prev[next->id] = current->id;
+	if ((farm->id_table[q->prev[next->id]] != farm->start)
+		&& (check_loops(farm->id_table[q->prev[next->id]], next, q, farm) == 0)
+		&& (compare_weights(farm->id_table[q->prev[next->id]], next, q) == 1))
+		q->prev[q->prev[next->id]] = next->id;
+	q->prev[next->id] = current->id;
 	return (1);
 }

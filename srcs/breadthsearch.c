@@ -3,19 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   breadthsearch.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:04 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 13:39:23 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 15:52:23 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "lemin.h"
 
-int				check_start_end(t_farm *farm, t_queue *queue)
+int	check_start_end(t_farm *farm, t_queue *queue)
 {
-	int index;
+	int	index;
 
 	index = -1;
 	while (++index != farm->start->links_nb)
@@ -31,9 +30,9 @@ int				check_start_end(t_farm *farm, t_queue *queue)
 	return (0);
 }
 
-static int		find_neighbours(t_queue *queue, t_room *room)
+static int	find_neighbours(t_queue *queue, t_room *room)
 {
-	int index;
+	int	index;
 
 	index = 0;
 	while (index < room->links_nb)
@@ -57,23 +56,23 @@ static int		find_neighbours(t_queue *queue, t_room *room)
 ** but do not visit end, we return -1, to indicate a path was not foud.
 */
 
-int				breadth_first_search(t_farm *farm, t_queue *queue)
+int	breadth_first_search(t_farm *f, t_queue *q)
 {
-	int		index;
+	int		i;
 	int		node;
 
-	index = -1;
-	set_to_n(&queue->queue, queue->length, -1);
-	reset_queue(queue, farm->start->id, farm->end->id);
-	while (++index < queue->length && queue->visited[farm->end->id] != 1 && queue->queue[index] >= 0)
+	i = -1;
+	set_to_n(&q->queue, q->length, -1);
+	reset_queue(q, f->start->id, f->end->id);
+	while (++i < q->length && q->visited[f->end->id] != 1 && q->queue[i] >= 0)
 	{
-		node = queue->queue[index];
-		find_neighbours(queue, farm->id_table[node]);
+		node = q->queue[i];
+		find_neighbours(q, f->id_table[node]);
 	}
-	if (queue->visited[farm->end->id] != 1)
+	if (q->visited[f->end->id] != 1)
 		return (-1);
-	if (queue->flow[farm->start->id][farm->end->id] == 1
-		&& queue->prev[farm->end->id] == farm->start->id)
-		queue->flow[farm->start->id][farm->end->id] = 0;
+	if (q->flow[f->start->id][f->end->id] == 1
+		&& q->prev[f->end->id] == f->start->id)
+		q->flow[f->start->id][f->end->id] = 0;
 	return (0);
 }

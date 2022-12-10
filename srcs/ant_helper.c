@@ -1,15 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ant_functions_b.c                                  :+:      :+:    :+:   */
+/*   ant_helper.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:51:58 by marius            #+#    #+#             */
-/*   Updated: 2022/12/08 13:29:03 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 16:53:32 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "lemin.h"
 
@@ -18,7 +17,7 @@
 ** we have not yet sent out all ants, send a new ant onto the path.
 */
 
-int		send_new_ant(t_farm *farm, int *path, int mov, int *fin)
+int	send_new_ant(t_farm *farm, int *path, int mov, int *fin)
 {
 	int		index;
 
@@ -42,7 +41,7 @@ int		send_new_ant(t_farm *farm, int *path, int mov, int *fin)
 ** Check's if it's necessary to print a space
 */
 
-int		check_print_space(int x)
+int	check_print_space(int x)
 {
 	if (x != 0)
 		ft_putchar(' ');
@@ -50,7 +49,7 @@ int		check_print_space(int x)
 	return (x);
 }
 
-int		*get_path_lengths(t_farm *farm, t_path *paths, int *total)
+int	*get_path_lengths(t_farm *farm, t_path *paths, int *total)
 {
 	int		index;
 	int		*steps;
@@ -58,7 +57,8 @@ int		*get_path_lengths(t_farm *farm, t_path *paths, int *total)
 
 	index = 0;
 	path = paths;
-	if (!(steps = (int *)ft_memalloc(sizeof(int) * farm->max_paths)))
+	steps = (int *)ft_memalloc(sizeof(int) * farm->max_paths);
+	if (!(steps))
 		return (NULL);
 	while (index < farm->max_paths)
 	{

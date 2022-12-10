@@ -6,7 +6,7 @@
 /*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:07:38 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 15:30:34 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/10 17:25:12 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # define GET_ROOMS 2
 # define __MAX_INT__ 2147483647
 
-typedef	struct		s_path
+typedef struct s_path
 {
 	int				*path;
 	int				len;
@@ -30,9 +30,9 @@ typedef	struct		s_path
 	int				*division;
 	int				longest;
 	struct s_path	*next;
-}					t_path;
+}	t_path;
 
-typedef struct		s_queue
+typedef struct s_queue
 {
 	int				*queue;
 	int				*visited;
@@ -40,9 +40,9 @@ typedef struct		s_queue
 	int				length;
 	int				position;
 	int				**flow;
-}					t_queue;
+}	t_queue;
 
-typedef struct		s_room
+typedef struct s_room
 {
 	int				id;
 	int				links_nb;
@@ -52,15 +52,15 @@ typedef struct		s_room
 	char			*name;
 	int				empty;
 	int				weight;
-}					t_room;
+}	t_room;
 
-typedef struct		s_input
+typedef struct s_input
 {
 	char			*line;
 	struct s_input	*next;
-}					t_input;
+}	t_input;
 
-typedef struct		s_farm
+typedef struct s_farm
 {
 	int				ant_nb;
 	int				flags;
@@ -74,7 +74,7 @@ typedef struct		s_farm
 	t_input			*input;
 	t_input			*input_start;
 	char			*line;
-}					t_farm;
+}	t_farm;
 
 /*
 ** Parsing :
@@ -120,4 +120,12 @@ int					ft_delete_line(char *line);
 int					ft_free_lemin(t_farm *f, t_room *r);
 int					free_links(char *line, char **rooms, int ret);
 
+void				save_flow(t_queue *queue, t_farm *farm);
+int					return_check(int ret);
+int					return_check2(int ret);
+int					return_check3(int t);
+int					bad_if_return(t_farm **farm, char *line);
+int					useless_function(t_farm *farm, char **line);
+void				new_function(t_queue *queue, t_farm *farm, t_path **new);
+int					malloc_q(t_queue *queue);
 #endif

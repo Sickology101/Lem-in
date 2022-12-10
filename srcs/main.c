@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:46:36 by marius            #+#    #+#             */
-/*   Updated: 2022/12/09 09:29:31 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/10 15:49:54 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	write_input(t_farm *farm)
 	}
 }
 
-int			main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	t_farm	*farm;
 	t_room	*room;
@@ -33,9 +33,11 @@ int			main(int argc, char **argv)
 		ft_printf("usage : %s < <map_file> \n", argv[0]);
 		return (0);
 	}
-	if (!(farm = ft_memalloc(sizeof(t_farm))))
+	farm = ft_memalloc(sizeof(t_farm));
+	if (!(farm))
 		return (-1);
-	if (!(room = ft_memalloc(sizeof(t_room))))
+	room = ft_memalloc(sizeof(t_room));
+	if (!(room))
 		return (ft_free_lemin(farm, room));
 	farm->first_room = room;
 	if (read_file(farm, room) == -1)

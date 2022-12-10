@@ -6,25 +6,11 @@
 /*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:37 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 15:43:29 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/10 17:19:58 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lemin.h"
-
-int	return_check(int ret)
-{
-	if (ret > 0)
-		return (0);
-	else
-		return (-1);
-}
-
-int	bad_if_return(t_farm **farm, char *line)
-{
-	(*farm)->line = line;
-	return (0);
-}
 
 static int	room_check_coo(char *line)
 {
