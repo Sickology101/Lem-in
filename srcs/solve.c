@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   solve.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:53:33 by marius            #+#    #+#             */
-/*   Updated: 2022/12/11 14:52:00 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/11 16:12:53 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	solve(t_farm *farm, int flag)
 {
 	t_queue	queue;
 	t_path	*path_list;
-	int	i;
+	int		i;
 
 	if (initialise_queue(&queue, farm) < 0)
 	{

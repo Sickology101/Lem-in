@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
+/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:46:36 by marius            #+#    #+#             */
-/*   Updated: 2022/12/11 14:53:17 by marius           ###   ########.fr       */
+/*   Updated: 2022/12/11 16:12:43 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,20 +23,21 @@ static void	write_input(t_farm *farm)
 	}
 }
 
-static int	read_flag(int argc, char **argv)
+static int	read_flag(int argc, char **av)
 {
 	int	index;
-	
+
 	index = 0;
 	if (argc > 1)
 	{
 		while (++index < argc)
 		{
-			if (ft_strcmp(argv[index], "-l") == 0)
+			if (ft_strcmp(av[index], "-l") == 0)
 				return (1);
 			else
 			{
-				ft_printf("usage : %s < <map_file> [-l flag can be used to print number of lines]\n", argv[0]);
+				ft_printf("usage: %s < <map> [-l flag for \
+					number of moves]\n", av[0]);
 				return (-1);
 			}
 		}
@@ -48,7 +49,7 @@ int	main(int argc, char **argv)
 {
 	t_farm	*farm;
 	t_room	*room;
-	int 	flag;
+	int		flag;
 
 	flag = read_flag(argc, argv);
 	if (flag == -1)
