@@ -6,7 +6,7 @@
 /*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:52:37 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 18:30:15 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/11 14:34:38 by parkharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int	room_check_coo(char *line)
 	return (0);
 }
 
-static int	room_check_syntax(char **line)
+static int	rcs(char **line)
 {
 	int		index;
 	char	*temp;
@@ -100,32 +100,31 @@ static int	dash_comment(char *line, int mode)
 	return (0);
 }
 
-int	get_room(t_room *room, t_farm *farm)
+int	get_room(t_room *r, t_farm *f)
 {
-	char	*line;
+	char	*l;
 	int		ret;
 	long	id;
 
 	id = 0;
-	line = NULL;
-	ret = gnl_store(0, &line, farm, 2);
-	while (ret > 0 && line && dash_comment(line, 0) != -1)
+	l = NULL;
+	ret = gnl_store(0, &l, f, 2);
+	while (ret > 0 && l && dash_comment(l, 0) != -1)
 	{
-		if (line && line[0] == '#')
+		if (l && l[0] == '#')
 		{
-			if (check_comment(farm, line) == -1)
-				return (error_free_line(line));
+			if (check_comment(f, l) == -1)
+				return (error_free_line(l));
 		}
-		else if (line && ft_strchr(line, '-') == NULL)
-			if ((!(line) || (room_check_syntax(&line)) == 0)
-				|| (new_room(farm, &room, line, id++)) == 0)
-				return (error_free_line(line));
-		ft_memdel((void *)&line);
-		ret = gnl_store(0, &line, farm, 2);
-		if (line && dash_comment(line, 1) != -1)
-			return (bad_if_return(&farm, line));
+		else if (l && ft_strchr(l, '-') == NULL)
+			if ((!(l) || (rcs(&l)) == 0) || (new_room(f, &r, l, id++)) == 0)
+				return (error_free_line(l));
+		ft_memdel((void *)&l);
+		ret = gnl_store(0, &l, f, 2);
+		if (l && dash_comment(l, 1) != -1)
+			return (bad_if_return(&f, l));
 	}
 	if (ret != 0)
-		ft_memdel((void *)&line);
+		ft_memdel((void *)&l);
 	return (return_check(ret));
 }
