@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/08 12:46:36 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 17:27:58 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/11 14:53:17 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,36 @@ static void	write_input(t_farm *farm)
 	}
 }
 
+static int	read_flag(int argc, char **argv)
+{
+	int	index;
+	
+	index = 0;
+	if (argc > 1)
+	{
+		while (++index < argc)
+		{
+			if (ft_strcmp(argv[index], "-l") == 0)
+				return (1);
+			else
+			{
+				ft_printf("usage : %s < <map_file> [-l flag can be used to print number of lines]\n", argv[0]);
+				return (-1);
+			}
+		}
+	}
+	return (0);
+}
+
 int	main(int argc, char **argv)
 {
 	t_farm	*farm;
 	t_room	*room;
+	int 	flag;
 
-	if (argc > 1)
-	{
-		ft_printf("usage : %s < <map_file> \n", argv[0]);
+	flag = read_flag(argc, argv);
+	if (flag == -1)
 		return (0);
-	}
 	farm = ft_memalloc(sizeof(t_farm));
 	if (!(farm))
 		return (-1);
@@ -44,7 +64,7 @@ int	main(int argc, char **argv)
 		return (ft_free_lemin(farm, room));
 	write_input(farm);
 	ft_putchar('\n');
-	solve(farm);
+	solve(farm, flag);
 	ft_free_lemin(farm, room);
 	sleep (3);
 	return (0);

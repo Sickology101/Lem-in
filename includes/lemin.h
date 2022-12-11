@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lemin.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: parkharo <parkharo@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: marius <marius@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 10:07:38 by marius            #+#    #+#             */
-/*   Updated: 2022/12/10 17:25:12 by parkharo         ###   ########.fr       */
+/*   Updated: 2022/12/11 14:49:31 by marius           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int					usage(void);
 ** Algo :
 */
 int					error_free_line(char *line);
-int					solve(t_farm *f);
+int					solve(t_farm *f, int flag);
 int					breadth_first_search(t_farm *f, t_queue *q);
 int					generate(t_queue *q, t_farm *f, t_path **p, int t);
 int					send_ants(t_farm *f, t_path *paths, int moving_ants, int x);
